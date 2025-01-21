@@ -1,0 +1,30 @@
+# Node modules 
+node_modules/
+
+# Archivos de log
+*.log
+
+# Archivos de configuración de entorno (por ejemplo, variables de entorno)
+.env
+
+# Directorios de producción
+/dist
+/build
+
+# Archivos de configuración de editor de texto
+.vscode/
+.idea/
+
+# Archivos del sistema operativo (Mac, Windows)
+.DS_Store
+Thumbs.db
+
+# Archivos generados por npm
+npm-debug.log*
+
+# Archivos temporales de desarrollo
+*.bak
+*.swp
+
+# Archivos generados por algunos entornos de prueba
+coverage/

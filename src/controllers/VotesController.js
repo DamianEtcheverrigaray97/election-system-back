@@ -59,6 +59,95 @@ module.exports = {
                 error: 'Server error'
             });
         }
-    }
+    },
     
+    getVoteDetails: async (req, res) => {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                status: 'error',
+                error: 'Vote ID is required'
+            });
+        }
+
+        try {
+            const [voteDetails] = await db.query(
+                `SELECT 
+                    v.id AS vote_id, 
+                    v.date AS vote_date, 
+                    v.candidate_id, 
+                    c.name AS candidate_name, 
+                    c.lastName AS candidate_lastName, 
+                    vt.id AS voter_id, 
+                    vt.name AS voter_name, 
+                    vt.lastName AS voter_lastName, 
+                    vt.document AS voter_document,
+                    vt.dob AS voter_dob 
+                FROM votes v
+                JOIN voters vt ON v.candidate_voted_id = vt.id
+                JOIN voters c ON v.candidate_id = c.id
+                WHERE v.id = ?`,
+                [id]
+            );
+
+            if (voteDetails.length === 0) {
+                return res.status(404).json({
+                    status: 'error',
+                    error: 'Vote not found'
+                });
+            }
+
+            return res.status(200).json({
+                status: 'success',
+                data: voteDetails[0]
+            });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 'error',
+                error: 'Server error'
+            });
+        }
+    },
+
+    listVotes: async (req, res) => {
+        try {
+            const [votes] = await db.query(
+                `SELECT 
+                    v.id AS vote_id, 
+                    v.date AS vote_date, 
+                    c.name AS candidate_name, 
+                    c.lastName AS candidate_lastName, 
+                    vt.name AS voter_name, 
+                    vt.lastName AS voter_lastName 
+                 FROM votes v
+                 JOIN voters vt ON v.candidate_voted_id = vt.id
+                 JOIN voters c ON v.candidate_id = c.id
+                 ORDER BY v.date DESC`
+            );
+
+            return res.status(200).json({
+                status: 'success',
+                data: votes.map(vote => ({
+                    voteId: vote.vote_id,
+                    voteDate: vote.vote_date,
+                    candidate: {
+                        name: vote.candidate_name,
+                        lastName: vote.candidate_lastName
+                    },
+                    voter: {
+                        name: vote.voter_name,
+                        lastName: vote.voter_lastName
+                    }
+                }))
+            });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 'error',
+                error: 'Server error'
+            });
+        }
+    }
 }

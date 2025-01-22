@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const globalConstants = require('./../const/globalConstants');
 
 module.exports = {
     verifyToken : (req, res, next) => {
@@ -12,7 +13,7 @@ module.exports = {
         }
 
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, globalConstants.JWT_SECRET);
             req.admin = decoded; // Decodificar token y agregar admin a la solicitud
             next(); // Continuar al siguiente middleware o controlador
         } catch (err) {

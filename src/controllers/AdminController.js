@@ -61,7 +61,7 @@ module.exports = {
             });
         }
     },
-
+    
     changePassword: async (req, res) => {
         const { newPassword } = req.body;
     

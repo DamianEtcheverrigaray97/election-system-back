@@ -3,10 +3,12 @@ const globalConstants = require('./const/globalConstants');
 const bodyParser = require('body-parser');
 routerConfig = require('./routes/index.routes');
 require('./config/db'); // Inicia la conexión a la base de datos
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocs = require('./config/swagger');
 
 const apiConfig = (app) => {
     app.use(bodyParser.json());
-
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
     return;
 } 
 

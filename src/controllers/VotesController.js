@@ -149,5 +149,46 @@ module.exports = {
                 error: 'Server error'
             });
         }
+    },
+
+    mostVotedCandidates: async (req, res) => {
+        try {
+            const [results] = await db.query(
+                `SELECT 
+                    c.id AS candidate_id,
+                    c.name AS candidate_name,
+                    c.lastName AS candidate_lastName,
+                    COUNT(v.id) AS total_votes
+                 FROM votes v
+                 JOIN voters c ON v.candidate_id = c.id
+                 WHERE c.is_candidate = 1
+                 GROUP BY c.id, c.name, c.lastName
+                 ORDER BY total_votes DESC`
+            );
+    
+            if (results.length === 0) {
+                return res.status(404).json({
+                    status: 'error',
+                    error: 'No candidates found'
+                });
+            }
+    
+            return res.status(200).json({
+                status: 'success',
+                data: results.map(candidate => ({
+                    candidateId: candidate.candidate_id,
+                    name: candidate.candidate_name,
+                    lastName: candidate.candidate_lastName,
+                    totalVotes: candidate.total_votes
+                }))
+            });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 'error',
+                error: 'Server error'
+            });
+        }
     }
+    
 }

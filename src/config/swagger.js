@@ -16,7 +16,10 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [path.join(__dirname, '../routes/**/*.js'), path.join(__dirname, '../controllers/**/*.js')], // Asegúrate de que esté buscando los archivos de las rutas y controladores
+  apis: [
+    path.join(__dirname, '../routes/**/*.js'), 
+    path.join(__dirname, '../controllers/**/*.js')
+  ]
 };
 
 // Generar la documentación de Swagger

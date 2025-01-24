@@ -63,13 +63,13 @@ module.exports = {
     },
     
     changePassword: async (req, res) => {
-        const { newPassword } = req.body;
+        const { currentPassword, newPassword } = req.body;
     
-        // Verificar que se recibió la nueva contraseña
-        if (!newPassword) {
+        // Verificar que se recibieron ambas contraseñas
+        if (!currentPassword || !newPassword) {
             return res.status(400).json({
                 status: 'error',
-                error: 'New password is required'
+                error: 'Both current and new password are required'
             });
         }
     
@@ -92,7 +92,16 @@ module.exports = {
     
             const currentPasswordHash = adminResults[0].password;
     
-            // 3. Verificamos que la nueva contraseña no sea igual a la actual
+            // 3. Verificamos que la contraseña actual ingresada sea correcta
+            const isCurrentPasswordValid = await bcrypt.compare(currentPassword, currentPasswordHash);
+            if (!isCurrentPasswordValid) {
+                return res.status(400).json({
+                    status: 'error',
+                    error: 'The current password is incorrect'
+                });
+            }
+    
+            // 4. Verificamos que la nueva contraseña no sea igual a la actual
             const isSamePassword = await bcrypt.compare(newPassword, currentPasswordHash);
             if (isSamePassword) {
                 return res.status(400).json({
@@ -101,10 +110,10 @@ module.exports = {
                 });
             }
     
-            // 4. Encriptamos la nueva contraseña
+            // 5. Encriptamos la nueva contraseña
             const hashedPassword = await bcrypt.hash(newPassword, 10);
     
-            // 5. Actualizar la contraseña en la base de datos
+            // 6. Actualizamos la contraseña en la base de datos
             const [updateResults] = await db.query(
                 'UPDATE admins SET password = ? WHERE id = ?',
                 [hashedPassword, adminId]
@@ -113,11 +122,11 @@ module.exports = {
             if (updateResults.affectedRows === 0) {
                 return res.status(400).json({
                     status: 'error',
-                    error: 'Admin not found'
+                    error: 'Failed to update password'
                 });
             }
     
-            // 6. Respuesta exitosa
+            // 7. Respuesta exitosa
             return res.status(200).json({
                 status: 'success',
                 data: {
@@ -132,5 +141,6 @@ module.exports = {
             });
         }
     }
+    
     
 }

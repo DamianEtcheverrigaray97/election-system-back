@@ -189,6 +189,41 @@ module.exports = {
                 error: 'Server error'
             });
         }
+    },
+    
+    getAllVotableCandidates: async (req, res) => {
+        try {
+            const [results] = await db.query(
+                `SELECT 
+                    c.id AS candidate_id,
+                    c.name AS candidate_name,
+                    c.lastName AS candidate_lastName
+                 FROM voters c
+                 WHERE c.is_candidate = 1`
+            );
+    
+            if (results.length === 0) {
+                return res.status(204).json({
+                    status: 'success',
+                    message: 'No candidates available to vote for.'
+                });
+            }
+    
+            return res.status(200).json({
+                status: 'success',
+                data: results.map(candidate => ({
+                    candidateId: candidate.candidate_id,
+                    name: candidate.candidate_name,
+                    lastName: candidate.candidate_lastName
+                }))
+            });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 'error',
+                error: 'Server error'
+            });
+        }
     }
     
 }

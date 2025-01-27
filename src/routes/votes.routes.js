@@ -349,5 +349,61 @@ router.post('/vote', VotesController.vote);
  */
 router.get('/most-voted', Middleware.verifyToken, VotesController.mostVotedCandidates);
 
+/**
+ * @swagger
+ * /votes/get-all-candidates:
+ *   get:
+ *     summary: Get all votable candidates
+ *     description: Retrieves a list of all candidates available to vote for.
+ *     operationId: getAllVotableCandidates
+ *     tags:
+ *       - Votes
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all votable candidates
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       candidateId:
+ *                         type: integer
+ *                         description: ID of the candidate.
+ *                         example: 1
+ *                       name:
+ *                         type: string
+ *                         description: First name of the candidate.
+ *                         example: 'Juan'
+ *                       lastName:
+ *                         type: string
+ *                         description: Last name of the candidate.
+ *                         example: 'Pérez'
+ *       204:
+ *         description: No candidates available to vote for
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 error:
+ *                   type: string
+ *                   example: 'Server error'
+ */
+router.get('/get-all-candidates', VotesController.getAllVotableCandidates);
+
+
 
 module.exports = router;

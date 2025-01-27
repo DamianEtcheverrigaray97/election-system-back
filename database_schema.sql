@@ -1,4 +1,4 @@
--- Creación de Tablas:
+-- Creación de Tablas. Para evitar errores se deben ejecutar individualmente:
 
 -- Tabla de administradores
 CREATE TABLE admins (

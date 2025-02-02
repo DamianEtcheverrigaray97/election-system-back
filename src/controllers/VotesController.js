@@ -3,10 +3,10 @@ const db = require('../config/db');
 module.exports = {
     
     vote : async (req, res) => {
-        const { document, candidate_id } = req.body;
+        const { document, candidateId } = req.body;
 
         // Verificar que se recibieron los datos necesarios
-        if (!document || !candidate_id) {
+        if (!document || !candidateId) {
             return res.status(400).json({
                 status: 'error',
                 error: 'Missing required data'
@@ -35,7 +35,7 @@ module.exports = {
             }
     
             // 3. Verificar que el candidato exista
-            const [candidateResults] = await db.query('SELECT * FROM voters WHERE id = ? AND is_candidate = 1', [candidate_id]);
+            const [candidateResults] = await db.query('SELECT * FROM voters WHERE id = ? AND is_candidate = 1', [candidateId]);
             if (candidateResults.length === 0) {
                 return res.status(404).json({
                     status: 'error',
@@ -44,7 +44,7 @@ module.exports = {
             }
     
             // 4. Registrar el voto
-            const [insertResults] = await db.query('INSERT INTO votes (candidate_id, candidate_voted_id, date) VALUES (?, ?, NOW())', [candidate_id, voter.id]);
+            const [insertResults] = await db.query('INSERT INTO votes (candidate_id, candidate_voted_id, date) VALUES (?, ?, NOW())', [candidateId, voter.id]);
             return res.status(201).json({
                 status: 'success',
                 data: {
@@ -74,16 +74,16 @@ module.exports = {
         try {
             const [voteDetails] = await db.query(
                 `SELECT 
-                    v.id AS vote_id, 
-                    v.date AS vote_date, 
+                    v.id AS voteId, 
+                    v.date AS voteDate, 
                     v.candidate_id, 
-                    c.name AS candidate_name, 
-                    c.lastName AS candidate_lastName, 
-                    vt.id AS voter_id, 
-                    vt.name AS voter_name, 
-                    vt.lastName AS voter_lastName, 
-                    vt.document AS voter_document,
-                    vt.dob AS voter_dob 
+                    c.name AS candidatename, 
+                    c.lastName AS candidatelastName, 
+                    vt.id AS voterId, 
+                    vt.name AS voterName, 
+                    vt.lastName AS voterLastName, 
+                    vt.document AS voterDocument,
+                    vt.dob AS voterDob 
                 FROM votes v
                 JOIN voters vt ON v.candidate_voted_id = vt.id
                 JOIN voters c ON v.candidate_id = c.id
@@ -115,12 +115,12 @@ module.exports = {
         try {
             const [votes] = await db.query(
                 `SELECT 
-                    v.id AS vote_id, 
-                    v.date AS vote_date, 
-                    c.name AS candidate_name, 
-                    c.lastName AS candidate_lastName, 
-                    vt.name AS voter_name, 
-                    vt.lastName AS voter_lastName 
+                    v.id AS voteId, 
+                    v.date AS voteDate, 
+                    c.name AS candidateName, 
+                    c.lastName AS candidateLastName, 
+                    vt.name AS voterName, 
+                    vt.lastName AS voterLastName 
                  FROM votes v
                  JOIN voters vt ON v.candidate_voted_id = vt.id
                  JOIN voters c ON v.candidate_id = c.id
@@ -130,15 +130,15 @@ module.exports = {
             return res.status(200).json({
                 status: 'success',
                 data: votes.map(vote => ({
-                    voteId: vote.vote_id,
-                    voteDate: vote.vote_date,
+                    voteId: vote.voteId,
+                    voteDate: vote.voteDate,
                     candidate: {
-                        name: vote.candidate_name,
-                        lastName: vote.candidate_lastName
+                        name: vote.candidateName,
+                        lastName: vote.candidateLastName
                     },
                     voter: {
-                        name: vote.voter_name,
-                        lastName: vote.voter_lastName
+                        name: vote.voterName,
+                        lastName: vote.voterLastName
                     }
                 }))
             });

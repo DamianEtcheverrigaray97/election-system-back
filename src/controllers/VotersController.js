@@ -3,10 +3,10 @@ const db = require('../config/db');
 module.exports = {
 
     addVoter: async (req, res) => {
-        const { document, name, lastName, dob, is_candidate } = req.body;
+        const { document, name, lastName, dob, isCandidate } = req.body;
     
         // validamos que se recibieron los datos necesarios
-        if (!document || !name || !lastName || !dob || typeof is_candidate === 'undefined') {
+        if (!document || !name || !lastName || !dob || typeof isCandidate === 'undefined') {
             return res.status(400).json({
                 status: 'error',
                 error: 'Missing required data'
@@ -26,7 +26,7 @@ module.exports = {
             // Insertamos el nuevo votante
             const [insertResult] = await db.query(
                 'INSERT INTO voters (document, name, lastName, dob, is_candidate) VALUES (?, ?, ?, ?, ?)',
-                [document, name, lastName, dob, is_candidate]
+                [document, name, lastName, dob, isCandidate]
             );
     
             return res.status(201).json({
